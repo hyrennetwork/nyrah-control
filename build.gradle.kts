@@ -19,14 +19,12 @@ repositories {
 dependencies {
     // kotlin
     implementation(kotlin("stdlib"))
-    api("org.jetbrains.kotlinx:kotlinx-io-jvm:0.1.16")
 
     // netty
     implementation("io.netty:netty-codec:4.1.58.Final")
 
     // vertx
     implementation("io.vertx:vertx-core:4.0.3")
-    implementation("io.vertx:vertx-lang-kotlin:4.1.0")
 
     // trove4j
     implementation("net.sf.trove4j:trove4j:3.0.3")

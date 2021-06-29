@@ -1,46 +1,50 @@
 package net.hyren.nyrah.control.misc.netty.buffer
 
 import io.netty.buffer.ByteBuf
+import kotlin.properties.Delegates
+import net.hyren.nyrah.control.misc.primitives.and
 
 /**
  * @author Gutyerrez
  */
-fun ByteBuf.readVarInt(maxSize: Int = 5): Int {
+fun ByteBuf.readVarInt(): Int {
     var output = 0
-    var current = 0
+    var bytes = 0
 
     do {
         val byte = readByte()
 
-        output = output or (byte.toInt() and 0x7F) shl current++ * 7
+        output = output or ((byte and 0x7F) shl (bytes++ * 7))
 
-        if (current > maxSize) {
+        if (bytes > 5) {
             throw RuntimeException("VarInt too big")
         }
-
-    } while ((byte.toInt() and 0x80) == 0x80)
+    } while (byte and 0x80 == 0x80)
 
     return output
 }
 
 fun ByteBuf.writeVarInt(int: Int) {
-    var part: Int
+    var part by Delegates.notNull<Int>()
+
     var value = int
 
     do {
-        value = value ushr 7
         part = value and 0x7F
+        value = value shr 7
 
-        if (value != 0x00) {
+        if (value != 0) {
             part = part or 0x80
         }
 
         writeByte(part)
-    } while (value != 0x00)
+    } while (value != 0)
 }
 
 fun ByteBuf.readString(maxLength: Int = 32767 * 4): String {
     val length = readVarInt()
+
+    println("Length da string: $length")
 
     if (length < 0) {
         throw RuntimeException("Length cannot be less than 0")
@@ -69,6 +73,8 @@ fun ByteBuf.writeString(string: String?, maxLength: Int = 32767) {
     }
 
     val byteArray = string.toByteArray(Charsets.UTF_8)
+
+    println("Size da bytearray para escrever ${byteArray.size}")
 
     writeVarInt(byteArray.size)
     writeBytes(byteArray)

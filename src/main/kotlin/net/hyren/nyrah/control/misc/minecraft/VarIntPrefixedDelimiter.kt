@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf
 import io.vertx.core.Handler
 import io.vertx.core.buffer.Buffer
 import io.vertx.core.parsetools.RecordParser
+import net.hyren.nyrah.control.NyrahConstants
 import net.hyren.nyrah.control.handler.IHandler
 import net.hyren.nyrah.control.misc.primitives.getVarIntSize
 import net.hyren.nyrah.control.misc.protocol.Protocol
@@ -23,6 +24,8 @@ class VarIntPrefixedDelimiter(
     override fun handle(
         buffer: Buffer
     ) {
+        NyrahConstants.LOGGER.info("Connection: ${connection.isClosed}")
+
         if (!connection.isClosed) {
             try {
                 if (_buffer != null && _buffer!!.length() != 0) {

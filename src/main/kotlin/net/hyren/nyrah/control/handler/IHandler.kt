@@ -5,6 +5,7 @@ import io.vertx.core.Future
 import io.vertx.core.buffer.Buffer
 import io.vertx.core.net.NetSocket
 import net.hyren.nyrah.control.NyrahConstants
+import net.hyren.nyrah.control.misc.netty.buffer.readString
 import net.hyren.nyrah.control.misc.netty.buffer.readVarInt
 import net.hyren.nyrah.control.misc.netty.buffer.writeVarInt
 import net.hyren.nyrah.control.misc.primitives.getVarIntSize
@@ -28,9 +29,15 @@ interface IHandler {
     ) {
         val packetId = byteBuf.readVarInt()
 
+        NyrahConstants.LOGGER.info("Received packet request with id #$packetId")
+
         byteBuf.markReaderIndex()
 
         val packet = protocol.TO_SERVER.createPacket(packetId)
+
+        packet?.let {
+            NyrahConstants.LOGGER.info("Received packet request class: ${it::class.qualifiedName}")
+        }
 
         if (packet == null) {
             NyrahConstants.LOGGER.error("Packet $packetId cannot be found")
@@ -52,13 +59,27 @@ interface IHandler {
         val buffer = Buffer.buffer(packetSize.getVarIntSize() + packetSize)
         val byteBuf = buffer.byteBuf
 
-        byteBuf.writeVarInt(9211)
+        println("Size do byteBuf: $packetSize")
+
+        byteBuf.writeVarInt(packetSize)
         byteBuf.writeVarInt(packetId)
 
         packet.write(byteBuf)
 
+        val cloned = byteBuf.copy()
+
         return socket.write(buffer).onFailure { throw it }.onSuccess {
-            println("Sent packet: ${packet::class.qualifiedName}")
+            try {
+                println("Sent packet: ${packet::class.qualifiedName}")
+
+                println("Readable: ${cloned.readableBytes()}")
+                println("Size: ${cloned.readVarInt()}")
+                println("Id: ${cloned.readVarInt()}")
+                println("Response: ${cloned.readString()}")
+                println("Remaining bytes: ${cloned.readableBytes()}")
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 

@@ -5,6 +5,8 @@ import kotlin.properties.Delegates
 import net.hyren.nyrah.control.handler.IHandler
 import net.hyren.nyrah.control.misc.netty.buffer.readString
 import net.hyren.nyrah.control.misc.netty.buffer.readVarInt
+import net.hyren.nyrah.control.misc.netty.buffer.writeString
+import net.hyren.nyrah.control.misc.netty.buffer.writeVarInt
 import net.hyren.nyrah.control.misc.protocol.Protocol
 import net.hyren.nyrah.control.misc.protocol.packet.IPacket
 
@@ -30,7 +32,10 @@ class HandshakePacket : IPacket {
     override fun write(
         byteBuf: ByteBuf
     ) {
-        //
+        byteBuf.writeVarInt(protocolVersion)
+        byteBuf.writeString(serverAddress)
+        byteBuf.writeVarInt(serverPort)
+        byteBuf.writeVarInt(requestedProtocol)
     }
 
     override fun handle(

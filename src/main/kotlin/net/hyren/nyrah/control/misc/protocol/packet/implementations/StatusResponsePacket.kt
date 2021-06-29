@@ -28,6 +28,6 @@ class StatusResponsePacket(
         handler: IHandler
     ) = Unit
 
-    override fun size() = /*response.toByteArray().size.getVarIntSize() + response.toByteArray().size*/9211
+    override fun size() = response.toByteArray().size.getVarIntSize() + response.toByteArray().size
 
 }
