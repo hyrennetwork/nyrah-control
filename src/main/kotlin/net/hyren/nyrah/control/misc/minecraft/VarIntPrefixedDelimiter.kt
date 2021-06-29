@@ -4,7 +4,6 @@ import io.netty.buffer.ByteBuf
 import io.vertx.core.Handler
 import io.vertx.core.buffer.Buffer
 import io.vertx.core.parsetools.RecordParser
-import net.hyren.nyrah.control.NyrahConstants
 import net.hyren.nyrah.control.handler.IHandler
 import net.hyren.nyrah.control.misc.primitives.getVarIntSize
 import net.hyren.nyrah.control.misc.protocol.Protocol
@@ -24,14 +23,14 @@ class VarIntPrefixedDelimiter(
     override fun handle(
         buffer: Buffer
     ) {
-        NyrahConstants.LOGGER.info("Connection: ${connection.isClosed}")
+        println("Connection: ${connection.isClosed}")
 
         if (!connection.isClosed) {
             try {
-                if (_buffer != null && _buffer!!.length() != 0) {
-                    _buffer!!.appendBuffer(buffer)
-                } else {
+                if (_buffer == null || _buffer!!.length() == 0) {
                     _buffer = buffer
+                } else {
+                    _buffer!!.appendBuffer(buffer)
                 }
 
                 if (_buffer!!.length() == 0) {
@@ -75,6 +74,8 @@ class VarIntPrefixedDelimiter(
                         }
 
                         handler(innerBuffer.byteBuf)
+
+                        println("Current buffer length: ${innerBuffer.length()}")
                     }
 
                     _byteSize = if (_buffer != null && (connection.protocol != Protocol.GAME || !connection.isOnlineMode)) {
@@ -82,7 +83,7 @@ class VarIntPrefixedDelimiter(
                     } else {
                         -1
                     }
-                } while (_byteSize != -1 && _buffer != null && _buffer!!.length() > 0)
+                } while (_byteSize != -1 && _buffer!!.length() > 0)
             } catch (e: Exception) {
                 e.printStackTrace()
             }

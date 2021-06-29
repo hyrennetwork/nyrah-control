@@ -2,7 +2,6 @@ package net.hyren.nyrah.control.misc.protocol
 
 import kotlin.reflect.KClass
 import net.hyren.core.shared.misc.kotlin.sizedArray
-import net.hyren.nyrah.control.NyrahConstants
 import net.hyren.nyrah.control.misc.protocol.packet.IPacket
 import net.hyren.nyrah.control.misc.protocol.packet.implementations.HandshakePacket
 import net.hyren.nyrah.control.misc.protocol.packet.implementations.PingPacket

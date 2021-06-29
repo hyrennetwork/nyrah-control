@@ -4,7 +4,6 @@ import io.netty.buffer.ByteBuf
 import io.vertx.core.Future
 import io.vertx.core.buffer.Buffer
 import io.vertx.core.net.NetSocket
-import net.hyren.nyrah.control.NyrahConstants
 import net.hyren.nyrah.control.misc.netty.buffer.readString
 import net.hyren.nyrah.control.misc.netty.buffer.readVarInt
 import net.hyren.nyrah.control.misc.netty.buffer.writeVarInt
@@ -29,18 +28,18 @@ interface IHandler {
     ) {
         val packetId = byteBuf.readVarInt()
 
-        NyrahConstants.LOGGER.info("Received packet request with id #$packetId")
+        println("Received packet request with id #$packetId")
 
         byteBuf.markReaderIndex()
 
         val packet = protocol.TO_SERVER.createPacket(packetId)
 
         packet?.let {
-            NyrahConstants.LOGGER.info("Received packet request class: ${it::class.qualifiedName}")
+            println("Received packet request class: ${it::class.qualifiedName}")
         }
 
         if (packet == null) {
-            NyrahConstants.LOGGER.error("Packet $packetId cannot be found")
+            println("Packet $packetId cannot be found")
             return
         }
 
