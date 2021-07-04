@@ -13,7 +13,6 @@ object NyrahControl {
     @JvmStatic
     fun main(args: Array<String>) {
         val server = object : AbstractVerticle() {
-
             override fun start() {
                 vertx.createNetServer()
                     .exceptionHandler { throw it }
@@ -24,7 +23,6 @@ object NyrahControl {
             }
 
         }
-
         val vertx = Vertx.vertx(VertxOptions().apply {
             preferNativeTransport = true
         })

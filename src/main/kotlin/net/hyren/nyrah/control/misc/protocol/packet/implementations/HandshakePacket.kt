@@ -1,7 +1,6 @@
 package net.hyren.nyrah.control.misc.protocol.packet.implementations
 
 import io.netty.buffer.ByteBuf
-import kotlin.properties.Delegates
 import net.hyren.nyrah.control.handler.IHandler
 import net.hyren.nyrah.control.misc.netty.buffer.readString
 import net.hyren.nyrah.control.misc.netty.buffer.readVarInt
@@ -9,6 +8,7 @@ import net.hyren.nyrah.control.misc.netty.buffer.writeString
 import net.hyren.nyrah.control.misc.netty.buffer.writeVarInt
 import net.hyren.nyrah.control.misc.protocol.Protocol
 import net.hyren.nyrah.control.misc.protocol.packet.IPacket
+import kotlin.properties.Delegates
 
 /**
  * @author Gutyerrez
@@ -27,6 +27,13 @@ class HandshakePacket : IPacket {
         serverAddress = byteBuf.readString()
         serverPort = byteBuf.readUnsignedShort()
         requestedProtocol = byteBuf.readVarInt()
+
+        println("""
+            1 -> $protocolVersion
+            2 -> $serverAddress
+            3 -> $serverPort
+            4 -> $requestedProtocol
+        """.trimIndent())
     }
 
     override fun write(
