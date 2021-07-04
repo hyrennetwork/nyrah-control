@@ -27,13 +27,6 @@ class HandshakePacket : IPacket {
         serverAddress = byteBuf.readString()
         serverPort = byteBuf.readUnsignedShort()
         requestedProtocol = byteBuf.readVarInt()
-
-        println("""
-            1 -> $protocolVersion
-            2 -> $serverAddress
-            3 -> $serverPort
-            4 -> $requestedProtocol
-        """.trimIndent())
     }
 
     override fun write(

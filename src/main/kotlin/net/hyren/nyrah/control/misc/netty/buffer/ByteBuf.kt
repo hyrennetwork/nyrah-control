@@ -1,8 +1,8 @@
 package net.hyren.nyrah.control.misc.netty.buffer
 
 import io.netty.buffer.ByteBuf
-import kotlin.properties.Delegates
 import net.hyren.nyrah.control.misc.primitives.and
+import kotlin.properties.Delegates
 
 /**
  * @author Gutyerrez
@@ -44,8 +44,6 @@ fun ByteBuf.writeVarInt(int: Int) {
 fun ByteBuf.readString(maxLength: Int = 32767 * 4): String {
     val length = readVarInt()
 
-    println("Length da string: $length")
-
     if (length < 0) {
         throw RuntimeException("Length cannot be less than 0")
     }
@@ -73,8 +71,6 @@ fun ByteBuf.writeString(string: String?, maxLength: Int = 32767) {
     }
 
     val byteArray = string.toByteArray(Charsets.UTF_8)
-
-    println("Size da bytearray para escrever ${byteArray.size}")
 
     writeVarInt(byteArray.size)
     writeBytes(byteArray)
