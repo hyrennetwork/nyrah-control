@@ -35,8 +35,15 @@ class LoginStartPacket : IPacket {
         handler: IHandler
     ) {
         if (!Patterns.NICK.matches(name)) {
-            println("Opa")
-            return handler.close()
+            handler.close(
+                ComponentBuilder()
+                    .append(CoreConstants.Info.ERROR_SERVER_NAME)
+                    .append("\n\n")
+                    .append("§cO nome de usuário não é válido.")
+                    .create()
+            )
+
+            return
         }
 
         val proxies = CoreProvider.Cache.Local.APPLICATIONS.provide().fetchByApplicationType(
