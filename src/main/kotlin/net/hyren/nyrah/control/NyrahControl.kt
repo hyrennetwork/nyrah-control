@@ -3,6 +3,7 @@ package net.hyren.nyrah.control
 import io.vertx.core.AbstractVerticle
 import io.vertx.core.Vertx
 import io.vertx.core.VertxOptions
+import net.hyren.core.shared.CoreProvider
 import net.hyren.nyrah.control.handler.implementations.InitialHandler
 
 /**
@@ -12,6 +13,8 @@ object NyrahControl {
 
     @JvmStatic
     fun main(args: Array<String>) {
+        CoreProvider.prepare(25565)
+
         val server = object : AbstractVerticle() {
             override fun start() {
                 vertx.createNetServer()

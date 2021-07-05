@@ -39,9 +39,17 @@ class VarIntPrefixedDelimiter(
                     return connection.close()
                 }
 
-                /**
-                 * PLAY
-                 */
+                if (connection.protocol == Protocol.PLAY && connection.opposite != null) {
+                    connection.opposite!!.socket.write(_buffer)
+
+                    if (buffer.length() != _buffer!!.length()) {
+                        println("Restou residuos")
+                    }
+
+                    _buffer = null
+
+                    return
+                }
 
                 if (_byteSize == -1) {
                     _byteSize = _buffer!!.readVarInt()
@@ -60,8 +68,14 @@ class VarIntPrefixedDelimiter(
 
                     val payloadSize = _byteSize + size
 
-                    if (connection.protocol == Protocol.GAME) {
-                        // TODO later
+                    if (connection.protocol == Protocol.PLAY && connection.opposite != null) {
+                        connection.opposite!!.socket.write(_buffer!!.getBuffer(0, payloadSize))
+
+                        _buffer = if (payloadSize == _buffer!!.length()) {
+                            null
+                        } else {
+                            _buffer!!.getBuffer(payloadSize, _buffer!!.length())
+                        }
                     } else {
                         val innerBuffer = _buffer!!.getBuffer(size, payloadSize)
 
@@ -74,7 +88,7 @@ class VarIntPrefixedDelimiter(
                         handler(innerBuffer.byteBuf)
                     }
 
-                    _byteSize = if (_buffer != null && (connection.protocol != Protocol.GAME || !connection.isOnlineMode)) {
+                    _byteSize = if (_buffer != null && (connection.protocol != Protocol.LOGIN || !connection.isOnlineMode)) {
                         _buffer!!.readVarInt()
                     } else {
                         -1

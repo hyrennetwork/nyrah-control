@@ -1,62 +1,62 @@
 package net.hyren.nyrah.control.misc.protocol
 
-import kotlin.reflect.KClass
 import net.hyren.core.shared.misc.kotlin.sizedArray
 import net.hyren.nyrah.control.misc.protocol.packet.IPacket
-import net.hyren.nyrah.control.misc.protocol.packet.implementations.HandshakePacket
-import net.hyren.nyrah.control.misc.protocol.packet.implementations.PingPacket
-import net.hyren.nyrah.control.misc.protocol.packet.implementations.StatusRequestPacket
-import net.hyren.nyrah.control.misc.protocol.packet.implementations.StatusResponsePacket
+import net.hyren.nyrah.control.misc.protocol.packet.implementations.*
 import java.util.function.Supplier
+import kotlin.reflect.KClass
 
 /**
  * @author Gutyerrez
  */
-enum class Protocol(
-    val TO_SERVER: DirectionData,
-    val TO_CLIENT: DirectionData
-) {
+enum class Protocol {
 
-    HANDSHAKE(
-        DirectionData(Direction.TO_SERVER),
-        DirectionData(Direction.TO_CLIENT)
-    ) {
-
+    HANDSHAKE {
         init {
             TO_SERVER.registerPacket(
                 0x00,
                 HandshakePacket::class
-            ) {HandshakePacket()}
+            ) { HandshakePacket() }
         }
     },
-    STATUS(
-        DirectionData(Direction.TO_SERVER),
-        DirectionData(Direction.TO_CLIENT)
-    ) {
+    STATUS {
         init {
             TO_SERVER.registerPacket(
                 0x00,
                 StatusRequestPacket::class
-            ) {StatusRequestPacket()}
+            ) { StatusRequestPacket() }
             TO_SERVER.registerPacket(
                 0x01,
                 PingPacket::class
-            ) {PingPacket()}
+            ) { PingPacket() }
 
             TO_CLIENT.registerPacket(
                 0x00,
                 StatusResponsePacket::class
-            ) {StatusResponsePacket()}
+            ) { StatusResponsePacket() }
             TO_CLIENT.registerPacket(
                 0x01,
                 PingPacket::class
-            ) {PingPacket()}
+            ) { PingPacket() }
         }
     },
-    GAME(
-        DirectionData(Direction.TO_SERVER),
-        DirectionData(Direction.TO_CLIENT)
-    );
+    LOGIN {
+        init {
+            TO_SERVER.registerPacket(
+                0x00,
+                LoginStartPacket::class
+            ) { LoginStartPacket() }
+
+            TO_CLIENT.registerPacket(
+                0x00,
+                DisconnectPacket::class
+            ) { DisconnectPacket() }
+        }
+    },
+    PLAY;
+
+    val TO_SERVER = DirectionData(Direction.TO_SERVER)
+    val TO_CLIENT = DirectionData(Direction.TO_CLIENT)
 
     enum class Direction {
 

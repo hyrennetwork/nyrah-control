@@ -3,6 +3,7 @@ package net.hyren.nyrah.control.handler
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator
 import io.vertx.core.Future
+import io.vertx.core.Vertx
 import io.vertx.core.buffer.Buffer
 import io.vertx.core.net.NetSocket
 import net.hyren.nyrah.control.misc.netty.buffer.readVarInt
@@ -10,11 +11,14 @@ import net.hyren.nyrah.control.misc.netty.buffer.writeVarInt
 import net.hyren.nyrah.control.misc.primitives.getVarIntSize
 import net.hyren.nyrah.control.misc.protocol.Protocol
 import net.hyren.nyrah.control.misc.protocol.packet.IPacket
+import net.md_5.bungee.api.chat.BaseComponent
 
 /**
  * @author Gutyerrez
  */
 interface IHandler {
+
+    val VERTX: Vertx
 
     val socket: NetSocket
 
@@ -22,6 +26,8 @@ interface IHandler {
     var isOnlineMode: Boolean
 
     var protocol: Protocol
+
+    var opposite: IHandler?
 
     fun handle(
         byteBuf: ByteBuf
@@ -57,6 +63,14 @@ interface IHandler {
         ).onFailure { throw it }
     }
 
-    fun close()
+    fun close() = Unit
+
+    fun close(
+        reason: Array<BaseComponent>
+    ): Future<Void> = Future.succeededFuture()
+
+    fun close(
+        reason: BaseComponent
+    ) = close(arrayOf(reason))
 
 }

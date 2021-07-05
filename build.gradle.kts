@@ -20,14 +20,17 @@ dependencies {
     // kotlin
     implementation(kotlin("stdlib"))
 
+    // waterfall-chat
+    implementation("io.github.waterfallmc:waterfall-chat:1.16-R0.5-SNAPSHOT")
+
     // netty
     implementation("io.netty:netty-codec:4.1.58.Final")
 
     // vertx
     implementation("io.vertx:vertx-core:4.0.3")
 
-    // trove4j
-    implementation("net.sf.trove4j:trove4j:3.0.3")
+    // gson
+    compileOnly("com.google.code.gson:gson:2.8.7")
 
     // core-shared
     implementation("net.hyren:core-shared:0.1-ALPHA")
