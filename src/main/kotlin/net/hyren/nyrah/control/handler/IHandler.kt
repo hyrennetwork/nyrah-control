@@ -1,6 +1,7 @@
 package net.hyren.nyrah.control.handler
 
 import io.netty.buffer.ByteBuf
+import io.netty.buffer.ByteBufAllocator
 import io.vertx.core.Future
 import io.vertx.core.buffer.Buffer
 import io.vertx.core.net.NetSocket
@@ -27,20 +28,9 @@ interface IHandler {
     ) {
         val packetId = byteBuf.readVarInt()
 
-        println("Received packet request with id #$packetId")
-
         byteBuf.markReaderIndex()
 
-        val packet = protocol.TO_SERVER.createPacket(packetId)
-
-        packet?.let {
-            println("Received packet request class: ${it::class.qualifiedName}")
-        }
-
-        if (packet == null) {
-            println("Packet $packetId cannot be found")
-            return
-        }
+        val packet = protocol.TO_SERVER.createPacket(packetId) ?: return
 
         packet.read(byteBuf)
         packet.handle(this)
@@ -54,15 +44,17 @@ interface IHandler {
         )
 
         val packetSize = packet.size() + packetId.getVarIntSize()
-        val buffer = Buffer.buffer(packetSize.getVarIntSize() + packetSize)
-        val byteBuf = buffer.byteBuf
+
+        val byteBuf = ByteBufAllocator.DEFAULT.buffer(packetSize.getVarIntSize() + packetSize)
 
         byteBuf.writeVarInt(packetSize)
         byteBuf.writeVarInt(packetId)
 
         packet.write(byteBuf)
 
-        return socket.write(buffer).onFailure { throw it }
+        return socket.write(
+            Buffer.buffer(byteBuf)
+        ).onFailure { throw it }
     }
 
     fun close()

@@ -23,8 +23,6 @@ class VarIntPrefixedDelimiter(
     override fun handle(
         buffer: Buffer
     ) {
-        println("Connection: ${connection.isClosed}")
-
         if (!connection.isClosed) {
             try {
                 if (_buffer == null || _buffer!!.length() == 0) {
@@ -74,8 +72,6 @@ class VarIntPrefixedDelimiter(
                         }
 
                         handler(innerBuffer.byteBuf)
-
-                        println("Current buffer length: ${innerBuffer.length()}")
                     }
 
                     _byteSize = if (_buffer != null && (connection.protocol != Protocol.GAME || !connection.isOnlineMode)) {
