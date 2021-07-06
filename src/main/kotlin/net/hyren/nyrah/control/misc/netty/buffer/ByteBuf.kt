@@ -2,6 +2,7 @@ package net.hyren.nyrah.control.misc.netty.buffer
 
 import io.netty.buffer.ByteBuf
 import net.hyren.nyrah.control.misc.primitives.and
+import java.util.*
 import kotlin.properties.Delegates
 
 /**
@@ -74,4 +75,14 @@ fun ByteBuf.writeString(string: String?, maxLength: Int = 32767) {
 
     writeVarInt(byteArray.size)
     writeBytes(byteArray)
+}
+
+fun ByteBuf.readUUID() = UUID(
+    readLong(),
+    readLong()
+)
+
+fun ByteBuf.writeUUID(uuid: UUID) {
+    writeLong(uuid.mostSignificantBits)
+    writeLong(uuid.leastSignificantBits)
 }

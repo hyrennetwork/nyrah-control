@@ -7,6 +7,8 @@ import net.hyren.core.shared.CoreProvider
 import net.hyren.core.shared.applications.ApplicationType
 import net.hyren.core.shared.applications.status.ApplicationStatus
 import net.hyren.core.shared.misc.utils.Patterns
+import net.hyren.core.shared.users.data.User
+import net.hyren.core.shared.users.storage.table.UsersTable
 import net.hyren.nyrah.control.handler.IHandler
 import net.hyren.nyrah.control.handler.implementations.ConnectionHandler
 import net.hyren.nyrah.control.misc.netty.buffer.readString
@@ -14,6 +16,8 @@ import net.hyren.nyrah.control.misc.netty.buffer.writeString
 import net.hyren.nyrah.control.misc.primitives.getVarIntSize
 import net.hyren.nyrah.control.misc.protocol.packet.IPacket
 import net.md_5.bungee.api.chat.ComponentBuilder
+import org.jetbrains.exposed.dao.id.EntityID
+import java.util.*
 import kotlin.properties.Delegates
 
 /**
@@ -21,20 +25,20 @@ import kotlin.properties.Delegates
  */
 class LoginStartPacket : IPacket {
 
-    var name by Delegates.notNull<String>()
+    var username by Delegates.notNull<String>()
 
     override fun read(
         byteBuf: ByteBuf
-    ) { name = byteBuf.readString() }
+    ) { username = byteBuf.readString() }
 
     override fun write(
         byteBuf: ByteBuf
-    ) = byteBuf.writeString(name)
+    ) = byteBuf.writeString(username)
 
     override fun handle(
         handler: IHandler
     ) {
-        if (!Patterns.NICK.matches(name)) {
+        if (!Patterns.NICK.matches(username)) {
             handler.close(
                 ComponentBuilder()
                     .append(CoreConstants.Info.ERROR_SERVER_NAME)
@@ -55,6 +59,8 @@ class LoginStartPacket : IPacket {
             ) != null
         }
 
+        println("Proxies: ${proxies.size}")
+
         if (proxies.isEmpty()) {
             handler.close(
                 ComponentBuilder()
@@ -68,6 +74,18 @@ class LoginStartPacket : IPacket {
                     CoreProvider.Cache.Redis.USERS_STATUS.provide().fetchUsers().size % proxies.size
             ]
 
+            val user = CoreProvider.Cache.Local.USERS.provide().fetchByName(
+                username
+            ) ?: User(
+                EntityID(
+                    UUID.nameUUIDFromBytes("OfflinePlayer:$username".toByteArray()),
+                    UsersTable
+                ),
+                username
+            )
+
+            handler.setUser(user)
+
             handler.VERTX.createNetClient().connect(
                 SocketAddress.inetSocketAddress(proxyApplication.address)
             ).onSuccess {
@@ -75,10 +93,14 @@ class LoginStartPacket : IPacket {
                     handler,
                     it
                 )
-            }.onFailure { throw it }
+            }.onFailure {
+                throw it
+            }.onComplete {
+                println("Aaa")
+            }
         }
     }
 
-    override fun size() = name.length.getVarIntSize() + name.length
+    override fun size() = username.length.getVarIntSize() + username.length
 
 }

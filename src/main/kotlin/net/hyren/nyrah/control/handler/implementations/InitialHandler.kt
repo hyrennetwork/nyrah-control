@@ -3,12 +3,14 @@ package net.hyren.nyrah.control.handler.implementations
 import io.vertx.core.Future
 import io.vertx.core.Vertx
 import io.vertx.core.net.NetSocket
+import net.hyren.core.shared.users.data.User
 import net.hyren.nyrah.control.handler.IHandler
 import net.hyren.nyrah.control.misc.minecraft.VarIntPrefixedDelimiter
 import net.hyren.nyrah.control.misc.protocol.Protocol
 import net.hyren.nyrah.control.misc.protocol.packet.implementations.DisconnectPacket
 import net.md_5.bungee.api.chat.BaseComponent
 import net.md_5.bungee.chat.ComponentSerializer
+import kotlin.properties.Delegates
 
 /**
  * @author Gutyerrez
@@ -26,6 +28,10 @@ class InitialHandler(
 
     override var opposite: IHandler? = null
 
+    private var protocolVersion by Delegates.notNull<Int>()
+
+    private var _user: User? = null
+
     init {
         val handler = VarIntPrefixedDelimiter(
             this
@@ -33,6 +39,18 @@ class InitialHandler(
 
         socket.handler(handler)
     }
+
+    override fun setUser(
+        user: User
+    ) {
+        _user = user
+    }
+
+    override fun getUser() = _user
+
+    override fun setRawProtocolVersion(
+        protocolVersion: Int
+    ) { this.protocolVersion = protocolVersion }
 
     override fun close() {
         socket.close()
@@ -48,6 +66,10 @@ class InitialHandler(
                 *reason
             )
         )
-    ).onComplete { socket.close() }
+    ).onComplete {
+        socket.close()
+
+        isClosed = true
+    }
 
 }

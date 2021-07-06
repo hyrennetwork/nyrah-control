@@ -6,6 +6,7 @@ import io.vertx.core.Future
 import io.vertx.core.Vertx
 import io.vertx.core.buffer.Buffer
 import io.vertx.core.net.NetSocket
+import net.hyren.core.shared.users.data.User
 import net.hyren.nyrah.control.misc.netty.buffer.readVarInt
 import net.hyren.nyrah.control.misc.netty.buffer.writeVarInt
 import net.hyren.nyrah.control.misc.primitives.getVarIntSize
@@ -62,6 +63,18 @@ interface IHandler {
             Buffer.buffer(byteBuf)
         ).onFailure { throw it }
     }
+
+    fun setUser(
+        user: User
+    ) = Unit
+
+    fun getUser(): User? = null
+
+    fun setRawProtocolVersion(
+        protocolVersion: Int
+    ) = Unit
+
+    fun getRawProtocolVersion() = 47
 
     fun close() = Unit
 

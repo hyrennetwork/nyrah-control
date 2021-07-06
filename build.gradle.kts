@@ -1,5 +1,7 @@
 plugins {
     kotlin("jvm") version "1.5.10"
+
+    id("com.github.johnrengelman.shadow") version "7.0.0"
 }
 
 group = "net.hyren"
@@ -16,15 +18,31 @@ repositories {
     }
 }
 
+tasks {
+    compileKotlin {
+        kotlinOptions {
+            jvmTarget = "1.8"
+        }
+    }
+
+    shadowJar {
+        archiveFileName.set("${project.name}.jar")
+    }
+}
+
 dependencies {
     // kotlin
-    implementation(kotlin("stdlib"))
+    compileOnly(kotlin("stdlib"))
 
     // waterfall-chat
-    implementation("io.github.waterfallmc:waterfall-chat:1.16-R0.5-SNAPSHOT")
+    compileOnly("io.github.waterfallmc:waterfall-chat:1.16-R0.5-SNAPSHOT")
 
     // netty
     implementation("io.netty:netty-codec:4.1.58.Final")
+
+    // exposed
+    compileOnly("org.jetbrains.exposed:exposed-dao:0.31.1")
+    compileOnly("org.jetbrains.exposed:exposed-jodatime:0.31.1")
 
     // vertx
     implementation("io.vertx:vertx-core:4.0.3")

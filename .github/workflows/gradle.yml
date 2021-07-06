@@ -1,0 +1,15 @@
+on:
+  push:
+    branches: [ 'main' ]
+
+jobs:
+  nyrah-control:
+    runs-on: self-hosted
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build project
+        run: gradle shadowJar
+      - name: Deploy project to remote servers
+        run: |
+          sh /home/cloud/scripts/services/github/actions/deploy.sh build/libs/nyrah-control.jar

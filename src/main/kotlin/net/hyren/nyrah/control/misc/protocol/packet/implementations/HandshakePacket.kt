@@ -43,6 +43,8 @@ class HandshakePacket : IPacket {
     override fun handle(
         handler: IHandler
     ) {
+        handler.setRawProtocolVersion(protocolVersion)
+
         when (requestedProtocol) {
             1 -> handler.protocol = Protocol.STATUS
             2 -> {
