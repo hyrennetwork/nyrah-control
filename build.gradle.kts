@@ -26,6 +26,10 @@ tasks {
     }
 
     shadowJar {
+        manifest {
+            attributes["Main-Class"] = "net.hyren.nyrah.control.NyrahControl"
+        }
+        
         archiveFileName.set("${project.name}.jar")
     }
 }
