@@ -39,7 +39,7 @@ dependencies {
     compileOnly(kotlin("stdlib"))
 
     // waterfall-chat
-    compileOnly("io.github.waterfallmc:waterfall-chat:1.16-R0.5-SNAPSHOT")
+    implementation("io.github.waterfallmc:waterfall-chat:1.16-R0.5-SNAPSHOT")
 
     // netty
     implementation("io.netty:netty-codec:4.1.58.Final")
