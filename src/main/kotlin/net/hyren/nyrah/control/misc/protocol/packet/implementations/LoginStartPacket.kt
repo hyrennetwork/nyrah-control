@@ -53,13 +53,17 @@ class LoginStartPacket : IPacket {
         val proxies = CoreProvider.Cache.Local.APPLICATIONS.provide().fetchByApplicationType(
             ApplicationType.PROXY
         ).filter {
-            CoreProvider.Cache.Redis.APPLICATIONS_STATUS.provide().fetchApplicationStatusByApplication(
+            val applicationStatus = CoreProvider.Cache.Redis.APPLICATIONS_STATUS.provide().fetchApplicationStatusByApplication(
                 it,
                 ApplicationStatus::class
-            ) != null
-        }
+            ) ?: return@filter false
 
-        println("Proxies: ${proxies.size}")
+            return@filter if (it.slots == null) {
+                false
+            } else {
+                applicationStatus.onlinePlayers < it.slots!!
+            }
+        }
 
         if (proxies.isEmpty()) {
             handler.close(
@@ -93,11 +97,7 @@ class LoginStartPacket : IPacket {
                     handler,
                     it
                 )
-            }.onFailure {
-                throw it
-            }.onComplete {
-                println("Aaa")
-            }
+            }.onFailure { throw it }
         }
     }
 

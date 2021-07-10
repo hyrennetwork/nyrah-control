@@ -10,6 +10,7 @@ import net.hyren.nyrah.control.misc.protocol.Protocol
 import net.hyren.nyrah.control.misc.protocol.packet.implementations.DisconnectPacket
 import net.md_5.bungee.api.chat.BaseComponent
 import net.md_5.bungee.chat.ComponentSerializer
+import java.net.InetSocketAddress
 import kotlin.properties.Delegates
 
 /**
@@ -31,6 +32,8 @@ class InitialHandler(
     private var protocolVersion by Delegates.notNull<Int>()
 
     private var _user: User? = null
+
+    var _address by Delegates.notNull<InetSocketAddress>()
 
     init {
         val handler = VarIntPrefixedDelimiter(
@@ -71,5 +74,7 @@ class InitialHandler(
 
         isClosed = true
     }
+
+    override fun getAddress() = _address
 
 }

@@ -46,14 +46,38 @@ enum class Protocol {
                 0x00,
                 LoginStartPacket::class
             ) { LoginStartPacket() }
+            TO_SERVER.registerPacket(
+                0x01,
+                EncryptionResponsePacket::class
+            ) { EncryptionResponsePacket() }
+            TO_SERVER.registerPacket(
+                0x03,
+                NyrahLoginRequestPacket::class
+            ) { NyrahLoginRequestPacket() }
 
             TO_CLIENT.registerPacket(
                 0x00,
                 DisconnectPacket::class
             ) { DisconnectPacket() }
+            TO_CLIENT.registerPacket(
+                0x01,
+                EncryptionRequestPacket::class
+            ) { EncryptionRequestPacket() }
+            TO_CLIENT.registerPacket(
+                0x02,
+                LoginSuccessPacket::class
+            ) { LoginSuccessPacket() }
+            TO_CLIENT.registerPacket(
+                0x03,
+                NetworkCompressionPacket::class
+            ) { NetworkCompressionPacket() }
+            TO_CLIENT.registerPacket(
+                0x05,
+                NyrahLoginResponsePacket::class
+            ) { NyrahLoginResponsePacket() }
         }
     },
-    PLAY;
+    GAME;
 
     val TO_SERVER = DirectionData(Direction.TO_SERVER)
     val TO_CLIENT = DirectionData(Direction.TO_CLIENT)

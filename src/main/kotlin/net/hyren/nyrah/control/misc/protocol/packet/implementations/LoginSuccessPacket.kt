@@ -22,7 +22,7 @@ class LoginSuccessPacket : IPacket {
     ) {
         username = byteBuf.readString()
         uniqueId = UUID.fromString(byteBuf.readString(
-            16
+            36
         ))
     }
 

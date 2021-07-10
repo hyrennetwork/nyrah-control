@@ -5,6 +5,8 @@ import net.hyren.core.shared.CoreProvider
 import net.hyren.nyrah.control.handler.IHandler
 import net.hyren.nyrah.control.misc.protocol.Protocol
 import net.hyren.nyrah.control.misc.protocol.packet.IPacket
+import java.io.File
+import java.util.*
 
 /**
  * @author Gutyerrez
@@ -26,8 +28,19 @@ class StatusRequestPacket : IPacket {
             return handler.close()
         }
 
-        handler.sendPacket(StatusResponsePacket(
-            """
+        val file = File("favicon.png")
+
+        val favicon = if (!file.exists()) {
+            null
+        } else {
+            Base64.getEncoder().encodeToString(
+                file.readBytes()
+            )
+        }
+
+        handler.sendPacket(
+            StatusResponsePacket(
+                """
                 {
                     "version": {
                         "name": "1.8.9",
@@ -41,10 +54,11 @@ class StatusRequestPacket : IPacket {
                     "description": {
                         "text": "Nyrah Control"
                     },
-                    "favicon": "data:image/png;base64,null"
+                    "favicon": "data:image/png;base64,$favicon"
                 }
-            """.trimIndent()
-        ))
+                """.trimIndent()
+            )
+        )
     }
 
     override fun size() = 0

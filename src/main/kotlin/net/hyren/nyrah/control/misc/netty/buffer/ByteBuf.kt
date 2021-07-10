@@ -1,6 +1,7 @@
 package net.hyren.nyrah.control.misc.netty.buffer
 
 import io.netty.buffer.ByteBuf
+import io.vertx.core.json.DecodeException
 import net.hyren.nyrah.control.misc.primitives.and
 import java.util.*
 import kotlin.properties.Delegates
@@ -85,4 +86,23 @@ fun ByteBuf.readUUID() = UUID(
 fun ByteBuf.writeUUID(uuid: UUID) {
     writeLong(uuid.mostSignificantBits)
     writeLong(uuid.leastSignificantBits)
+}
+
+fun ByteBuf.readByteArray(maxLength: Int = Int.MAX_VALUE): ByteArray {
+    val length = readVarInt()
+
+    if (length > maxLength) {
+        throw DecodeException("Byte array is bigger than expected ($length > $maxLength)")
+    }
+
+    val byteArray = ByteArray(length)
+
+    readBytes(byteArray)
+
+    return byteArray
+}
+
+fun ByteBuf.writeByteArray(byteArray: ByteArray) {
+    writeVarInt(byteArray.size)
+    writeBytes(byteArray)
 }

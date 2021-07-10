@@ -39,7 +39,7 @@ class VarIntPrefixedDelimiter(
                     return connection.close()
                 }
 
-                if (connection.protocol == Protocol.PLAY && connection.opposite != null) {
+                if (connection.protocol == Protocol.GAME && connection.opposite != null) {
                     connection.opposite!!.socket.write(_buffer)
 
                     if (buffer.length() != _buffer!!.length()) {
@@ -68,7 +68,7 @@ class VarIntPrefixedDelimiter(
 
                     val payloadSize = _byteSize + size
 
-                    if (connection.protocol == Protocol.PLAY && connection.opposite != null) {
+                    if (connection.protocol == Protocol.GAME && connection.opposite != null) {
                         connection.opposite!!.socket.write(_buffer!!.getBuffer(0, payloadSize))
 
                         _buffer = if (payloadSize == _buffer!!.length()) {

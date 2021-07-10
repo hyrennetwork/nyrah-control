@@ -51,8 +51,9 @@ dependencies {
     // vertx
     implementation("io.vertx:vertx-core:4.0.3")
 
-    // gson
+    // google
     compileOnly("com.google.code.gson:gson:2.8.7")
+    api("com.google.guava:guava:30.1.1-jre")
 
     // core-shared
     implementation("net.hyren:core-shared:0.1-ALPHA")

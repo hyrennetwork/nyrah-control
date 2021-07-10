@@ -24,8 +24,8 @@ object NyrahControl {
                     .onSuccess { println("Nyrah Control is running on ${it.actualPort()}") }
                     .onFailure { throw it }
             }
-
         }
+
         val vertx = Vertx.vertx(VertxOptions().apply {
             preferNativeTransport = true
         })

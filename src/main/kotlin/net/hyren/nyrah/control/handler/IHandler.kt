@@ -13,6 +13,7 @@ import net.hyren.nyrah.control.misc.primitives.getVarIntSize
 import net.hyren.nyrah.control.misc.protocol.Protocol
 import net.hyren.nyrah.control.misc.protocol.packet.IPacket
 import net.md_5.bungee.api.chat.BaseComponent
+import java.net.InetSocketAddress
 
 /**
  * @author Gutyerrez
@@ -37,7 +38,9 @@ interface IHandler {
 
         byteBuf.markReaderIndex()
 
-        val packet = protocol.TO_SERVER.createPacket(packetId) ?: return
+        println("Packet received: $protocol - ${protocol.getInboundDirection()} (#$packetId)")
+
+        val packet = protocol.getInboundDirection().createPacket(packetId) ?: return
 
         packet.read(byteBuf)
         packet.handle(this)
@@ -46,23 +49,37 @@ interface IHandler {
     fun sendPacket(
         packet: IPacket
     ): Future<Void> {
-        val packetId = protocol.TO_CLIENT.getPacketId(packet) ?: return Future.failedFuture(
+        val packetId = protocol.getOutboundDirection().getPacketId(packet) ?: return Future.failedFuture(
             "Cannot send packet ${packet::class.qualifiedName}"
         )
 
-        val packetSize = packet.size() + packetId.getVarIntSize()
+        try {
+            val packetSize = packet.size() + packetId.getVarIntSize()
 
-        val byteBuf = ByteBufAllocator.DEFAULT.buffer(packetSize.getVarIntSize() + packetSize)
+            val byteBuf = ByteBufAllocator.DEFAULT.buffer(packetSize.getVarIntSize() + packetSize)
 
-        byteBuf.writeVarInt(packetSize)
-        byteBuf.writeVarInt(packetId)
+            byteBuf.writeVarInt(packetSize)
+            byteBuf.writeVarInt(packetId)
 
-        packet.write(byteBuf)
+            packet.write(byteBuf)
 
-        return socket.write(
-            Buffer.buffer(byteBuf)
-        ).onFailure { throw it }
+            println("Send packet: $protocol - ${protocol.getOutboundDirection()} (#$packetId)")
+
+            return socket.write(
+                Buffer.buffer(byteBuf)
+            ).onFailure { throw it }
+        } catch (e: Exception) {
+            e.printStackTrace()
+
+            return Future.failedFuture(e)
+        }
     }
+
+    fun Protocol.getOutboundDirection() = TO_CLIENT
+
+    fun Protocol.getInboundDirection() = TO_SERVER
+
+    fun getAddress(): InetSocketAddress
 
     fun setUser(
         user: User
