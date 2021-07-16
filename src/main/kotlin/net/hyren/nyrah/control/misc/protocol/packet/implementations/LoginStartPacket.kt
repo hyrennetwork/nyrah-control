@@ -9,8 +9,8 @@ import net.hyren.core.shared.applications.status.ApplicationStatus
 import net.hyren.core.shared.misc.utils.Patterns
 import net.hyren.core.shared.users.data.User
 import net.hyren.core.shared.users.storage.table.UsersTable
+import net.hyren.nyrah.control.connection.UserConnectionHandler
 import net.hyren.nyrah.control.handler.IHandler
-import net.hyren.nyrah.control.handler.implementations.ConnectionHandler
 import net.hyren.nyrah.control.misc.netty.buffer.readString
 import net.hyren.nyrah.control.misc.netty.buffer.writeString
 import net.hyren.nyrah.control.misc.primitives.getVarIntSize
@@ -93,10 +93,10 @@ class LoginStartPacket : IPacket {
             handler.VERTX.createNetClient().connect(
                 SocketAddress.inetSocketAddress(proxyApplication.address)
             ).onSuccess {
-                handler.opposite = ConnectionHandler(
+                handler.opposite = UserConnectionHandler(
                     handler,
                     it
-                )
+                ).apply { proxy = proxyApplication }
             }.onFailure { throw it }
         }
     }

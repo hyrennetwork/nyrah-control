@@ -18,7 +18,7 @@ import kotlin.properties.Delegates
  */
 class InitialHandler(
     override val socket: NetSocket
-) : IHandler {
+) : AbstractPacketHandler() {
 
     override val VERTX: Vertx = Vertx.currentContext().owner()
 
@@ -36,11 +36,11 @@ class InitialHandler(
     var _address by Delegates.notNull<InetSocketAddress>()
 
     init {
-        val handler = VarIntPrefixedDelimiter(
-            this
-        ) { handle(it) }
-
-        socket.handler(handler)
+        socket.handler(
+            VarIntPrefixedDelimiter(
+                this
+            ) { handle(it) }
+        )
     }
 
     override fun setUser(

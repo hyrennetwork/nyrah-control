@@ -1,8 +1,10 @@
 package net.hyren.nyrah.control.misc.protocol.packet.implementations
 
+import com.google.common.net.InetAddresses
 import io.netty.buffer.ByteBuf
 import net.hyren.nyrah.control.handler.IHandler
 import net.hyren.nyrah.control.misc.netty.buffer.writeString
+import net.hyren.nyrah.control.misc.netty.buffer.writeUUID
 import net.hyren.nyrah.control.misc.primitives.getVarIntSize
 import net.hyren.nyrah.control.misc.protocol.packet.IPacket
 import java.net.InetSocketAddress
@@ -41,18 +43,18 @@ class NyrahLoginRequestPacket : IPacket {
         byteBuf: ByteBuf
     ) {
         byteBuf.writeString(username)
-//        byteBuf.writeUUID(uniqueId)
-//        byteBuf.writeBoolean(isOnlineMode)
-//        byteBuf.writeInt(InetAddresses.coerceToInteger(
-//            inetSocketAddress.address
-//        ))
-//        byteBuf.writeShort(inetSocketAddress.port)
+        byteBuf.writeUUID(uniqueId)
+        byteBuf.writeBoolean(isOnlineMode)
+        byteBuf.writeInt(InetAddresses.coerceToInteger(
+            inetSocketAddress.address
+        ))
+        byteBuf.writeShort(inetSocketAddress.port)
     }
 
     override fun handle(
         handler: IHandler
     ) = Unit
 
-    override fun size() = username.toByteArray().size.getVarIntSize() + username.toByteArray().size/* + 23*/
+    override fun size() = username.toByteArray().size.getVarIntSize() + username.toByteArray().size + 23
 
 }

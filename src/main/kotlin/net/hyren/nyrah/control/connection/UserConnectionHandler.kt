@@ -1,8 +1,11 @@
-package net.hyren.nyrah.control.handler.implementations
+package net.hyren.nyrah.control.connection
 
 import io.vertx.core.Vertx
 import io.vertx.core.net.NetSocket
+import net.hyren.core.shared.applications.data.Application
 import net.hyren.nyrah.control.handler.IHandler
+import net.hyren.nyrah.control.handler.implementations.AbstractPacketHandler
+import net.hyren.nyrah.control.misc.minecraft.VarIntPrefixedDelimiter
 import net.hyren.nyrah.control.misc.protocol.Protocol
 import net.hyren.nyrah.control.misc.protocol.packet.implementations.HandshakePacket
 import net.hyren.nyrah.control.misc.protocol.packet.implementations.NyrahLoginRequestPacket
@@ -10,10 +13,10 @@ import net.hyren.nyrah.control.misc.protocol.packet.implementations.NyrahLoginRe
 /**
  * @author Gutyerrez
  */
-class ConnectionHandler(
+class UserConnectionHandler(
     handler: IHandler,
     override val socket: NetSocket
-) : IHandler {
+) : AbstractPacketHandler() {
 
     override val VERTX: Vertx = Vertx.currentContext().owner()
 
@@ -24,14 +27,20 @@ class ConnectionHandler(
 
     override var opposite: IHandler? = handler
 
-    // proxy 1 = 135.148.70.166:30001
+    lateinit var proxy: Application
 
     init {
+        socket.closeHandler { println("fecharam") }.handler(
+            VarIntPrefixedDelimiter(
+                this
+            ) { handle(it) }
+        )
+
         sendPacket(
             HandshakePacket().apply {
                 protocolVersion = opposite!!.getRawProtocolVersion()
-                serverAddress = "135.148.70.166"
-                serverPort = 30001
+                serverAddress = "45.231.208.180"
+                serverPort = 25565
                 requestedProtocol = 2
             }
         ).onSuccess {
