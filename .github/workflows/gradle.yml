@@ -9,7 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build project
-        run: gradle shadowJar
+        run: gradle shadowJar --refresh-dependencies
       - name: Deploy project to remote servers
         run: |
           sh /home/cloud/scripts/services/github/actions/deploy.sh build/libs/nyrah-control.jar
